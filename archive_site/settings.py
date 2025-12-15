@@ -157,6 +157,7 @@ WHITENOISE_USE_FINDERS = True
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+SERVE_MEDIA = env_bool("DJANGO_SERVE_MEDIA", True)
 
 
 # ======================
