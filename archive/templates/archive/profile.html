@@ -17,9 +17,17 @@
             <div class="avatar-preview-wrap">
                 {% with avatar=form.instance.avatar avatar_url=form.instance.avatar_url %}
                     {% if avatar %}
-                        <img src="{{ avatar.url }}" alt="Аватар" id="avatar-preview" class="avatar-preview">
+                        <img src="{{ avatar.url }}" alt="Аватар" id="avatar-preview" class="avatar-preview"
+                             onerror="this.style.display='none'; document.getElementById('avatar-preview-placeholder').style.display='flex';">
+                        <div class="avatar-preview avatar-preview-placeholder" id="avatar-preview-placeholder" style="display:none;">
+                            {{ request.user.username|first|upper }}
+                        </div>
                     {% elif avatar_url %}
-                        <img src="{{ avatar_url }}" alt="Аватар" id="avatar-preview" class="avatar-preview">
+                        <img src="{{ avatar_url }}" alt="Аватар" id="avatar-preview" class="avatar-preview"
+                             onerror="this.style.display='none'; document.getElementById('avatar-preview-placeholder').style.display='flex';">
+                        <div class="avatar-preview avatar-preview-placeholder" id="avatar-preview-placeholder" style="display:none;">
+                            {{ request.user.username|first|upper }}
+                        </div>
                     {% else %}
                         <div class="avatar-preview avatar-preview-placeholder" id="avatar-preview-placeholder">
                             {{ request.user.username|first|upper }}

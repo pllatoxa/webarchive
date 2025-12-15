@@ -38,9 +38,17 @@
                 <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem;">
                     {% with p=comment.author.profile %}
                         {% if p.avatar %}
-                            <img src="{{ p.avatar.url }}" alt="{{ comment.author.username }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                            <img src="{{ p.avatar.url }}" alt="{{ comment.author.username }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;width:40px;height:40px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;">
+                                {{ comment.author.username|first|upper }}
+                            </div>
                         {% elif p.avatar_url %}
-                            <img src="{{ p.avatar_url }}" alt="{{ comment.author.username }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                            <img src="{{ p.avatar_url }}" alt="{{ comment.author.username }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;width:40px;height:40px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;">
+                                {{ comment.author.username|first|upper }}
+                            </div>
                         {% else %}
                             <div style="width:40px;height:40px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;">
                                 {{ comment.author.username|first|upper }}
@@ -59,9 +67,17 @@
                                     <div style="display:flex; align-items:center; gap:0.4rem;">
                                         {% with p=reply.author.profile %}
                                             {% if p.avatar %}
-                                                <img src="{{ p.avatar.url }}" alt="{{ reply.author.username }}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">
+                                                <img src="{{ p.avatar.url }}" alt="{{ reply.author.username }}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div style="display:none;width:30px;height:30px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;">
+                                                    {{ reply.author.username|first|upper }}
+                                                </div>
                                             {% elif p.avatar_url %}
-                                                <img src="{{ p.avatar_url }}" alt="{{ reply.author.username }}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">
+                                                <img src="{{ p.avatar_url }}" alt="{{ reply.author.username }}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div style="display:none;width:30px;height:30px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;">
+                                                    {{ reply.author.username|first|upper }}
+                                                </div>
                                             {% else %}
                                                 <div style="width:30px;height:30px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;">
                                                     {{ reply.author.username|first|upper }}

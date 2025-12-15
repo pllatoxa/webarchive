@@ -51,9 +51,17 @@
                     <div class="feed-user">
                         {% with p=post.author.profile %}
                             {% if p.avatar %}
-                                <img src="{{ p.avatar.url }}" alt="{{ post.author.username }}" class="feed-avatar">
+                                <img src="{{ p.avatar.url }}" alt="{{ post.author.username }}" class="feed-avatar"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                <div class="feed-avatar placeholder" style="display:none;">
+                                    {{ post.author.username|first|upper }}
+                                </div>
                             {% elif p.avatar_url %}
-                                <img src="{{ p.avatar_url }}" alt="{{ post.author.username }}" class="feed-avatar">
+                                <img src="{{ p.avatar_url }}" alt="{{ post.author.username }}" class="feed-avatar"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                <div class="feed-avatar placeholder" style="display:none;">
+                                    {{ post.author.username|first|upper }}
+                                </div>
                             {% else %}
                                 <div class="feed-avatar placeholder">
                                     {{ post.author.username|first|upper }}
