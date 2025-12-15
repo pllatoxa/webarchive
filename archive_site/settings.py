@@ -1,5 +1,20 @@
 import os
 from pathlib import Path
+import os
+
+def env_list(name, default=""):
+    return [x.strip() for x in os.getenv(name, default).split(",") if x.strip()]
+
+RENDER_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
+
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "")
+if RENDER_HOST:
+    ALLOWED_HOSTS += [RENDER_HOST]
+ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
+
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "")
+if RENDER_HOST:
+    CSRF_TRUSTED_ORIGINS += [f"https://{RENDER_HOST}"]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
