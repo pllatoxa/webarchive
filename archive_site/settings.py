@@ -220,6 +220,10 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/"
 SOCIAL_AUTH_LOGIN_ERROR_URL = "/login-error/"
 
+# Django auth redirects
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+
 
 # ======================
 # MISC
