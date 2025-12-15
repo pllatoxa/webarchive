@@ -27,12 +27,15 @@ DEBUG = env_bool("DJANGO_DEBUG", False)
 
 RENDER_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
 
-ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,.railway.app,.onrender.com,webarchive.com")
 if RENDER_HOST:
     ALLOWED_HOSTS.append(RENDER_HOST)
 ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
 
-CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = env_list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "https://web-production-d4846.up.railway.app,https://webarchive.com,https://*.onrender.com",
+)
 if RENDER_HOST:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_HOST}")
 
