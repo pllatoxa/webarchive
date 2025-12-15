@@ -1,0 +1,202 @@
+{% extends 'archive/base.html' %}
+{% block title %}Лента{% endblock %}
+
+{% block content %}
+<section class="feed-page">
+
+    <!-- Заголовок и кнопка "Написать пост" -->
+    <header class="feed-header">
+        <div class="feed-title-block">
+            <h1>Лента</h1>
+            <p class="lead">Посты от пользователей, как в Reddit / Instagram.</p>
+        </div>
+
+        <div class="feed-actions">
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'post_create' %}" class="button primary small">
+                    Написать пост
+                </a>
+            {% else %}
+                <span class="meta">Войдите, чтобы писать посты</span>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Поиск по ленте -->
+    <form method="get" class="feed-search" id="feed-search-form">
+        <div class="feed-search-row">
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Поиск по постам"
+                class="feed-search-input"
+            >
+            <button type="submit" class="button primary feed-search-button">
+                Найти
+            </button>
+            {% if search_query %}
+                <a href="{% url 'project_feed' %}" class="feed-search-clear">
+                    Сбросить
+                </a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Лента постов (вертикальный список) -->
+    <div class="feed-list" id="feed-list">
+        {% for post in posts %}
+            <article class="feed-card" style="display:flex;flex-direction:column;gap:0.6rem;">
+                <header class="feed-card-header">
+                    <div class="feed-user">
+                        {% if post.author.profile.avatar %}
+                            <img src="{{ post.author.profile.avatar.url }}"
+                                 alt="{{ post.author.username }}"
+                                 class="feed-avatar">
+                        {% else %}
+                            <div class="feed-avatar placeholder">
+                                {{ post.author.username|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="feed-user-text">
+                            <span class="feed-username">
+                                {{ post.author.profile.nickname|default:post.author.username }}
+                            </span>
+                            <span class="feed-time">
+                                {{ post.created_at|date:"d.m.Y H:i" }}
+                            </span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="feed-card-body">
+                    {% if post.title %}
+                        <h2 class="feed-title" style="margin-bottom:0.3rem;">{{ post.title }}</h2>
+                    {% endif %}
+                    <p class="feed-excerpt">
+                        {{ post.body|linebreaksbr }}
+                    </p>
+                </div>
+
+                <div class="feed-actions" style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+                    <form action="{% url 'post_like' post.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="button ghost small" type="submit">⬆ {{ post.likes_count|default:0 }}</button>
+                    </form>
+                    <form action="{% url 'post_dislike' post.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="button ghost small" type="submit">⬇ {{ post.dislike_count|default:0 }}</button>
+                    </form>
+                    <a href="{% url 'post_detail' post.pk %}" class="button ghost small">💬 Комментарии</a>
+                    {% if request.user == post.author %}
+                        <a href="{% url 'post_delete' post.pk %}" class="button ghost small">🗑 Удалить</a>
+                    {% endif %}
+                </div>
+            </article>
+        {% empty %}
+            <p class="feed-empty">
+                Постов пока нет. Напишите первый!
+            </p>
+        {% endfor %}
+    </div>
+
+    {# Скрытая пагинация – используется только JS-ом #}
+    {% if is_paginated and page_obj.has_next %}
+        <div id="pagination" class="pagination" style="display:none;">
+            <a id="next-page-link"
+               href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">
+                Следующая страница
+            </a>
+        </div>
+
+        <div id="feed-loader"
+             style="display:none; text-align:center; margin:1rem 0; opacity:.7;">
+            Загружаем ещё…
+        </div>
+    {% endif %}
+</section>
+
+<script>
+(function () {
+    const feedList = document.getElementById('feed-list');
+    const pageMain = document.querySelector('.page-main') || window;
+    const nextLinkEl = document.getElementById('next-page-link');
+    const loader = document.getElementById('feed-loader');
+
+    if (!feedList || !nextLinkEl) {
+        // Либо постов мало, либо нет следующей страницы — бесконечный скролл не нужен
+        return;
+    }
+
+    let nextPageUrl = nextLinkEl.href;
+    let isLoading = false;
+
+    function showLoader(show) {
+        if (!loader) return;
+        loader.style.display = show ? 'block' : 'none';
+    }
+
+    function loadMore() {
+        if (!nextPageUrl || isLoading) return;
+        isLoading = true;
+        showLoader(true);
+
+        fetch(nextPageUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Берём новые карточки постов из следующей страницы
+            const newCards = doc.querySelectorAll('.feed-card');
+            newCards.forEach(function (card) {
+                feedList.appendChild(card);
+            });
+
+            // Ищем новую ссылку "следующая страница"
+            const newNext = doc.getElementById('next-page-link');
+            if (newNext) {
+                nextPageUrl = newNext.href;
+            } else {
+                // Больше страниц нет
+                nextPageUrl = null;
+                showLoader(false);
+            }
+        })
+        .catch(function (err) {
+            console.error('Ошибка при подгрузке ленты:', err);
+        })
+        .finally(function () {
+            isLoading = false;
+            if (!nextPageUrl) {
+                showLoader(false);
+            }
+        });
+    }
+
+    function onScroll() {
+        const el = (pageMain === window) ? document.documentElement : pageMain;
+        const scrollTop = el.scrollTop;
+        const viewportHeight = el.clientHeight;
+        const fullHeight = el.scrollHeight;
+
+        // Когда остаётся ~200px до низа — грузим следующую страницу
+        if (fullHeight - (scrollTop + viewportHeight) < 200) {
+            loadMore();
+        }
+    }
+
+    if (pageMain === window) {
+        window.addEventListener('scroll', onScroll);
+    } else {
+        pageMain.addEventListener('scroll', onScroll);
+    }
+})();
+</script>
+{% endblock %}

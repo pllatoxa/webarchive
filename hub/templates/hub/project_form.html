@@ -1,0 +1,218 @@
+{% extends 'archive/base.html' %}
+{% block title %}Создать проект{% endblock %}
+{% block body_class %}project-form-page{% endblock %}
+
+{% block content %}
+<style>
+/* ===== Простой скроллинг страницы ===== */
+.project-form-page{
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+}
+
+/* ===== Убираем любые фикс-высоты/обрезания (если были раньше) ===== */
+.project-form-page .upload-page,
+.project-form-page .project-create-grid,
+.project-form-page .project-two-col,
+.project-form-page .panel,
+.project-form-page .project-main,
+.project-form-page .project-readme{
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* ===== Панели (ВАЖНО: теперь через переменные темы) ===== */
+.project-form-page .panel{
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  /* было rgba(10,14,22,0.72) -> ломало light тему */
+  background: var(--card);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 16px;
+  box-sizing: border-box;
+
+  transition: background-color .2s ease, border-color .2s ease;
+}
+
+.project-form-page .panel-header{
+  padding: 0 0 12px 0;
+}
+
+/* лейблы/текст чтобы в light не “проваливались” */
+.project-form-page .form-row label{
+  display:block;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.project-form-page .meta{
+  color: var(--muted);
+}
+
+/* компактнее */
+.project-form-page .form-row{ margin-bottom: 12px; }
+
+/* ===== Дропзона ZIP (тоже через переменные темы) ===== */
+.project-form-page #attachment-dropzone{
+  min-height: 120px;
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border: 1px dashed var(--border);
+
+  /* было rgba(255,255,255,0.03) -> в light выглядело грязно */
+  background: transparent;
+
+  transition: background-color .2s ease, border-color .2s ease;
+}
+
+.project-form-page #attachment-dropzone:hover{
+  border-color: var(--accent);
+  background: var(--glass); /* в dark: белая легкая, в light: черная легкая */
+}
+
+.project-form-page #attachment-dropzone.drag-over{
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.project-form-page .dropzone-icon{
+  flex: 0 0 auto;
+  font-size: 28px;
+  line-height: 1;
+  background: none;
+  border: none;
+}
+
+/* input файла прячем */
+.project-form-page .file-hidden-input{
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+</style>
+
+<section class="upload-page project-create-grid">
+  <header class="project-hero">
+    <div class="hero-text">
+      <p class="eyebrow">Новый проект</p>
+      <h1>Создать проект</h1>
+    </div>
+    <div class="hero-actions">
+      <button form="project-create-form" type="submit" class="button primary">Создать</button>
+      <a href="{% url 'project_list' %}" class="button ghost">Отмена</a>
+    </div>
+  </header>
+
+  <form id="project-create-form" method="post" enctype="multipart/form-data" class="project-two-col">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.visibility.errors }}
+
+    <div class="panel project-main">
+      <div class="panel-header"></div>
+
+      <div class="form-row">
+        <label for="{{ form.title.id_for_label }}">Название</label>
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.short_description.id_for_label }}">Описание</label>
+        {{ form.short_description }}
+        {{ form.short_description.errors }}
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.github_url.id_for_label }}">GitHub URL <span class="meta">(если есть)</span></label>
+        {{ form.github_url }}
+        {{ form.github_url.errors }}
+      </div>
+
+      {{ form.visibility }}
+    </div>
+
+    <div class="panel project-readme">
+      <div class="panel-header">
+        <h3>README</h3>
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.readme.id_for_label }}">Содержимое</label>
+        {{ form.readme }}
+      </div>
+
+      <div class="form-row">
+        <label for="{{ form.attachment.id_for_label }}">ZIP файл проекта</label>
+
+        <div class="upload-dropzone avatar-dropzone" id="attachment-dropzone">
+          <div class="dropzone-icon" aria-hidden="true">📁</div>
+          <div class="dropzone-text">
+            <strong id="attachment-title">Перетащите .zip сюда</strong>
+            <span class="meta" id="attachment-subtitle">или нажмите, чтобы выбрать ZIP</span>
+          </div>
+        </div>
+
+        {{ form.attachment }}
+        {{ form.attachment.errors }}
+      </div>
+    </div>
+  </form>
+</section>
+
+<script>
+(function() {
+  const dropzone = document.getElementById('attachment-dropzone');
+  const input = document.getElementById('{{ form.attachment.id_for_label }}');
+  const titleEl = document.getElementById('attachment-title');
+  const subtitleEl = document.getElementById('attachment-subtitle');
+  if (!dropzone || !input) return;
+
+  input.setAttribute('accept', '.zip,application/zip');
+  input.classList.add('file-hidden-input');
+
+  function setFileLabel(file) {
+    if (!titleEl || !subtitleEl) return;
+    if (file) {
+      titleEl.textContent = file.name;
+      subtitleEl.textContent = 'Нажмите, чтобы заменить ZIP';
+    } else {
+      titleEl.textContent = 'Перетащите .zip сюда';
+      subtitleEl.textContent = 'или нажмите, чтобы выбрать ZIP';
+    }
+  }
+
+  dropzone.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    const file = input.files && input.files[0] ? input.files[0] : null;
+    setFileLabel(file);
+  });
+
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+  dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('drag-over'); });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      input.files = e.dataTransfer.files;
+      setFileLabel(e.dataTransfer.files[0]);
+    }
+  });
+})();
+</script>
+{% endblock %}

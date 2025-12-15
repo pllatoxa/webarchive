@@ -1,0 +1,28 @@
+{% extends 'archive/base.html' %}
+{% block title %}Регистрация{% endblock %}
+{% block content %}
+<section class="detail auth-card">
+    <h1>Регистрация</h1>
+    <p class="lead">Создайте аккаунт, чтобы загружать свои проекты и мануалы.</p>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-row">
+            <label for="{{ form.username.id_for_label }}">Логин</label>
+            {{ form.username }}
+        </div>
+        <div class="form-row">
+            <label for="{{ form.password1.id_for_label }}">Пароль</label>
+            {{ form.password1 }}
+        </div>
+        <div class="form-row">
+            <label for="{{ form.password2.id_for_label }}">Повторите пароль</label>
+            {{ form.password2 }}
+        </div>
+        <div class="actions">
+            <button type="submit" class="button">Зарегистрироваться</button>
+            <a href="{% url 'login' %}" class="button ghost">Есть аккаунт? Войти</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

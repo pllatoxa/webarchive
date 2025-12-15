@@ -1,0 +1,38 @@
+{% extends 'archive/base.html' %}
+{% block title %}Новый пост{% endblock %}
+
+{% block content %}
+<section class="detail auth-card">
+    <h1>Написать пост</h1>
+    <p class="lead">Поделитесь новостью, идеей или опытом.</p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-row">
+            <label for="{{ form.title.id_for_label }}">Заголовок</label>
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.body.id_for_label }}">Текст</label>
+            {{ form.body }}
+            {{ form.body.errors }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.tags_text.id_for_label }}">Хештеги</label>
+            {{ form.tags_text }}
+            <p class="meta">Например: <code>#python #gamedev</code> или <code>python, gamedev</code></p>
+            {{ form.tags_text.errors }}
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="button primary">Опубликовать</button>
+            <a href="{% url 'project_feed' %}" class="button ghost">Отмена</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

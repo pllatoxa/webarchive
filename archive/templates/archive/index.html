@@ -1,0 +1,32 @@
+{% extends "archive/base.html" %}
+
+{% block title %}Архив для разработчиков{% endblock %}
+
+{# класс на body — чтобы выключить скролл только на главной #}
+{% block body_class %}home-static{% endblock %}
+
+{% block content %}
+<section class="home-hero full-bleed">
+    <div class="home-hero-content">
+        <p class="eyebrow">WEB ARCHIVE</p>
+        <h1>Архив для разработчиков</h1>
+        <p class="lead">
+            Сохраняйте важные материалы, проекты и идеи. Один архив для всего, что не хочется потерять.
+        </p>
+
+        <div class="home-hero-actions">
+             <a href="{% url 'project_feed' %}" class="button button-feed">
+             Открыть ленту
+        </a>
+
+        <a href="{% url 'project_list' %}" class="button button-projects">
+            Смотреть проекты
+        </a>
+
+        <a href="{% url 'resource_upload' %}" class="button button-upload">
+            Загрузить свой материал
+        </a>
+    </div>
+    </div>
+</section>
+{% endblock %}

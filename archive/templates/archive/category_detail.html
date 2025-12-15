@@ -1,0 +1,42 @@
+{% extends 'archive/base.html' %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block content %}
+<h1>{{ category.name }}</h1>
+<p class="lead">{{ category.description }}</p>
+
+<form method="get" class="filter-form">
+    {{ filter_form.q }}
+    {{ filter_form.resource_type }}
+    {{ filter_form.difficulty }}
+    {{ filter_form.language }}
+    {{ filter_form.ordering }}
+    <button type="submit">Применить</button>
+</form>
+
+<div class="card-grid">
+    {% for resource in resources %}
+        <div class="card">
+            <h3><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a></h3>
+            <p>{{ resource.description|truncatewords:20 }}</p>
+            <div class="meta">{{ resource.get_type_display }} • {{ resource.get_difficulty_display }}</div>
+            <div class="pill-row">
+                {% for tag in resource.tags.all %}<span class="pill">#{{ tag.name }}</span>{% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <p>В этой категории пока нет материалов.</p>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Назад</a>
+    {% endif %}
+    <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Вперёд</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

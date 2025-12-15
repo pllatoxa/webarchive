@@ -1,0 +1,16 @@
+{% extends 'archive/base.html' %}
+{% block title %}Категории{% endblock %}
+{% block content %}
+<h1>Категории</h1>
+<div class="card-grid">
+    {% for category in categories %}
+        <a class="card" href="{{ category.get_absolute_url }}">
+            <h3>{{ category.name }}</h3>
+            <p>{{ category.description|default:'Нет описания'|truncatewords:18 }}</p>
+            <span class="pill">{{ category.resource_count }} материалов</span>
+        </a>
+    {% empty %}
+        <p>Категории не найдены.</p>
+    {% endfor %}
+</div>
+{% endblock %}

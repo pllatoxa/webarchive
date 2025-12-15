@@ -1,0 +1,30 @@
+{% extends 'archive/base.html' %}
+{% block title %}{{ bundle.title }}{% endblock %}
+{% block content %}
+<h1>{{ bundle.title }}</h1>
+<p class="lead">{{ bundle.description }}</p>
+<p class="meta">Цена: {{ bundle.price }} ₽</p>
+
+<div class="actions">
+    {% if bundle.purchase_url %}
+        <a class="button accent" href="{{ bundle.purchase_url }}" target="_blank" rel="noopener">Купить / Получить</a>
+    {% else %}
+        <span class="pill">Ссылка на покупку ещё не добавлена</span>
+    {% endif %}
+</div>
+
+<section>
+    <h2>Что внутри</h2>
+    <div class="card-grid">
+        {% for resource in bundle.resources.all %}
+            <div class="card">
+                <h3><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a></h3>
+                <p>{{ resource.description|truncatewords:18 }}</p>
+                <div class="meta">{{ resource.get_type_display }} • {{ resource.category.name }}</div>
+            </div>
+        {% empty %}
+            <p>Ресурсы ещё не добавлены.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

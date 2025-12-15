@@ -1,0 +1,38 @@
+{% extends 'archive/base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<article class="detail">
+    <div class="meta">Проект: <a href="{{ post.project.get_absolute_url }}">{{ post.project.title }}</a></div>
+    <h1>{{ post.title }}</h1>
+    <div class="meta">{{ post.author.profile.nickname|default:post.author.username }} • {{ post.created_at|date:"d.m.Y H:i" }}</div>
+    <section class="full-text">
+        {{ post.body|linebreaks }}
+    </section>
+</article>
+
+<section class="detail">
+    <h2>Комментарии ({{ comments|length }})</h2>
+    <div class="full-text">
+        {% for comment in comments %}
+            <div class="card" style="padding:0.8rem 1rem; margin-bottom:0.6rem;">
+                <div class="meta">{{ comment.author.profile.nickname|default:comment.author.username }} • {{ comment.created_at|date:"d.m.Y H:i" }}</div>
+                <p>{{ comment.body|linebreaks }}</p>
+            </div>
+        {% empty %}
+            <p class="meta">Пока нет комментариев.</p>
+        {% endfor %}
+    </div>
+
+    <div class="panel" style="margin-top:1rem;">
+        <h3>Добавить комментарий</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-row">
+                {{ form.body }}
+            </div>
+            <button type="submit" class="button">Отправить</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

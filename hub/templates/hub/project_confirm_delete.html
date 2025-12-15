@@ -1,0 +1,20 @@
+{% extends 'archive/base.html' %}
+{% block title %}Удалить проект{% endblock %}
+
+{% block content %}
+<section class="detail auth-card">
+    <h1>Удалить проект</h1>
+    <p class="lead">Вы уверены, что хотите удалить "{{ project.title }}"? Это действие нельзя отменить.</p>
+
+    <div class="panel" style="margin-bottom: 1rem;">
+        <div class="meta">Автор: {{ project.owner.profile.nickname|default:project.owner.username }} • {{ project.created_at|date:"d.m.Y" }}</div>
+        <div class="full-text">{{ project.short_description|linebreaksbr }}</div>
+    </div>
+
+    <form method="post" class="actions" style="gap:0.75rem;">
+        {% csrf_token %}
+        <button type="submit" class="button accent">Удалить</button>
+        <a href="{{ project.get_absolute_url }}" class="button ghost">Отмена</a>
+    </form>
+</section>
+{% endblock %}

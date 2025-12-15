@@ -1,0 +1,32 @@
+{% extends "archive/base.html" %}
+
+{% block title %}Создать проект{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Создать проект</h1>
+
+<div class="panel upload-project-panel">
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <label>Название проекта</label>
+            {{ form.title }}
+        </div>
+
+        <div class="form-row">
+            <label>GitHub URL (если есть)</label>
+            {{ form.github_url }}
+        </div>
+
+        <div class="form-row">
+            <label>Описание</label>
+            {{ form.description }}
+        </div>
+
+        <button class="button primary" type="submit">Создать</button>
+    </form>
+</div>
+
+{% endblock %}

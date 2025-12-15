@@ -1,0 +1,85 @@
+{% extends "archive/base.html" %}
+{% load static %}
+
+{% block title %}Создать проект — Web Archive{% endblock %}
+
+{% block content %}
+<div class="upload-page">
+    <div class="upload-header">
+        <div>
+            <p class="eyebrow">Проекты</p>
+            <h1>Создать проект</h1>
+            <p class="lead">
+                Добавь свой пет-проект или репозиторий — он появится в ленте и профиле.
+            </p>
+        </div>
+    </div>
+
+    <div class="upload-layout">
+        <div class="upload-main">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Основная информация</h3>
+                    <p class="meta">Только самое важное: название, описание и GitHub (по желанию).</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" class="upload-form">
+                    {% csrf_token %}
+
+                    <div class="form-row">
+                        <label for="{{ form.title.id_for_label }}">Название проекта</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="flash flash-error">
+                                {{ form.title.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row">
+                        <label for="{{ form.full_description.id_for_label }}">Описание проекта</label>
+                        {{ form.full_description }}
+                        {% if form.full_description.errors %}
+                            <div class="flash flash-error">
+                                {{ form.full_description.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row">
+                        <label for="{{ form.github_url.id_for_label }}">GitHub URL (если есть)</label>
+                        {{ form.github_url }}
+                        {% if form.github_url.errors %}
+                            <div class="flash flash-error">
+                                {{ form.github_url.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="actions" style="margin-top:1rem;">
+                        <button type="submit" class="button primary">
+                            Опубликовать проект
+                        </button>
+                        <a href="{% url 'project_feed' %}" class="button ghost">
+                            Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <aside class="upload-side">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Подсказки</h3>
+                </div>
+                <ul class="meta" style="padding-left:1rem; margin:0;">
+                    <li>В названии — суть проекта, без лишнего.</li>
+                    <li>В описании — что делает, на чём написан, планы.</li>
+                    <li>GitHub ссылка поможет людям посмотреть код.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

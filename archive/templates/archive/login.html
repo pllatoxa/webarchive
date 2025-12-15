@@ -1,0 +1,19 @@
+{% extends 'archive/base.html' %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<section class="detail auth-card">
+    <h1>Войти</h1>
+    <p class="lead">Выберите способ входа.</p>
+
+    <div class="actions" style="flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem;">
+        <a class="button primary" href="{% url 'social:begin' 'google-oauth2' %}" data-no-transition="true">
+            Войти через Google
+        </a>
+        <a class="button ghost" href="{% url 'email_login_request' %}">
+            Войти по email (код)
+        </a>
+    </div>
+
+    {# Обычный логин отключён по запросу #}
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'archive/base.html' %}
+{% block title %}Поддержать проект{% endblock %}
+{% block content %}
+<h1>Поддержать проект</h1>
+<p>Проект без рекламы и подписок. Донаты помогают оплачивать хостинг и добавлять новые материалы.</p>
+<div class="donation-block">
+    <div class="pill-row">
+        {% for link in donation_links %}
+            <a class="pill" href="{{ link.url }}" target="_blank" rel="noopener">{{ link.title }}</a>
+        {% empty %}
+            <span>Пока нет ссылок для поддержки.</span>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

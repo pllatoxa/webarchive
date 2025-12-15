@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Архив материалов{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="{% if request.path == '/' %}home-static{% endif %} {% block body_class %}{% endblock %}">
+<header class="site-header">
+    <div class="container header-content">
+        <a href="/" class="logo">Web Archive</a>
+
+        <div class="nav-shell desktop-hidden">
+            <nav class="main-nav">
+                <a href="/" class="{% if request.path == '/' %}active{% endif %}">Главная</a>
+                <a href="{% url 'project_feed' %}"
+                   class="{% if request.path|slice:':13' == '/projects/feed' %}active{% endif %}">Лента</a>
+                <a href="{% url 'project_list' %}"
+                   class="{% if request.path|slice:':10' == '/projects' and request.path != '/projects/feed/' %}active{% endif %}">Проекты</a>
+                <a href="{% url 'donate' %}"
+                   class="{% if request.path|slice:':7' == '/donate' %}active{% endif %}">Поддержать проект</a>
+            </nav>
+        </div>
+
+        <div class="header-right">
+            <div class="theme-control">
+                <input type="checkbox" id="theme-toggle" class="theme-toggle-input" aria-label="Переключить тему">
+                <label class="theme-toggle" for="theme-toggle">
+                    <span class="toggle-sun">☀</span>
+                    <span class="toggle-moon">🌙</span>
+                    <span class="toggle-ball"></span>
+                </label>
+            </div>
+
+            {% if request.user.is_authenticated %}
+                <div class="user-chip">
+                    <a href="{% url 'profile' %}" class="user-profile-link">
+                        {% with display_name=request.user.profile.nickname|default:request.user.username %}
+                            {% if request.user.profile.avatar %}
+                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ display_name }}" class="user-avatar">
+                            {% else %}
+                                <span class="user-avatar user-avatar-placeholder">{{ display_name|first|upper }}</span>
+                            {% endif %}
+                            <span class="user-name">{{ display_name }}</span>
+                        {% endwith %}
+                    </a>
+
+                    <form action="{% url 'logout' %}" method="post" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="button ghost small" data-no-transition="true">Выйти</button>
+                    </form>
+                </div>
+            {% else %}
+                <a class="button primary"
+                   href="{% url 'login' %}"
+                   data-no-transition="true"
+                   style="padding: 0.75rem 1.4rem; font-size: 1rem;">
+                    Войти
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<div class="page-shell">
+    <aside class="side-nav">
+        <div class="side-nav-inner">
+            <div class="side-logo">Меню</div>
+
+            <div class="side-nav-links">
+                <a href="{% url 'home' %}" class="side-link {% if request.path == '/' %}active{% endif %}">Главная</a>
+                <a href="{% url 'project_feed' %}" class="side-link {% if request.path|slice:':13' == '/projects/feed' %}active{% endif %}">Лента</a>
+                <a href="{% url 'project_list' %}" class="side-link {% if request.path|slice:':10' == '/projects' and request.path != '/projects/feed/' %}active{% endif %}">Проекты</a>
+                <a href="{% url 'donate' %}" class="side-link {% if request.path|slice:':7' == '/donate' %}active{% endif %}">Поддержать</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ВАЖНО: убрали home-centered отсюда -->
+    <div class="page-main">
+        <main class="container" {% if request.path == '/' %}style="padding-top: 118px;"{% endif %}>
+            {% if messages %}
+                <div class="flash-wrap">
+                    {% for message in messages %}
+                        <div class="flash flash-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <div>
+            <strong>Архив материалов</strong><br>
+            Проект живёт на поддержке сообщества.
+        </div>
+        <div>
+            <a href="{% url 'donate' %}">Поддержать</a><br>
+            <a href="#">Политика конфиденциальности</a>
+        </div>
+        <div>
+            Контакт: <a href="mailto:info@example.com">info@example.com</a>
+        </div>
+    </div>
+</footer>
+
+<a href="{% url 'project_create' %}" class="fab" aria-label="Создать проект">+</a>
+
+<script>
+(function() {
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const saved = localStorage.getItem('theme');
+    const initial = saved || (prefersLight ? 'light' : 'dark');
+
+    const applyTheme = (theme) => {
+        root.setAttribute('data-theme', theme);
+        if (toggle) toggle.checked = theme === 'light';
+        localStorage.setItem('theme', theme);
+    };
+
+    applyTheme(initial);
+
+    if (toggle) {
+        toggle.addEventListener('change', () => {
+            applyTheme(toggle.checked ? 'light' : 'dark');
+        });
+    }
+})();
+</script>
+
+</body>
+</html>

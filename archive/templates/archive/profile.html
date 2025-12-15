@@ -1,0 +1,124 @@
+{% extends "archive/base.html" %}
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<section class="detail auth-card">
+    <h1>Ваш профиль</h1>
+    <p class="lead">Настройте аватар, ник и описание.</p>
+
+    <form method="post" enctype="multipart/form-data" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-row">
+            <label>Аватар</label>
+
+            <!-- Превью текущего аватара -->
+            <div class="avatar-preview-wrap">
+                {% if form.instance.avatar %}
+                    <img src="{{ form.instance.avatar.url }}" alt="Аватар"
+                         id="avatar-preview" class="avatar-preview">
+                {% else %}
+                    <div class="avatar-preview avatar-preview-placeholder" id="avatar-preview-placeholder">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Дропзона -->
+            <div class="upload-dropzone avatar-dropzone" id="avatar-dropzone">
+                <div class="dropzone-icon">📁</div>
+                <div class="dropzone-text">
+                    <strong>Перетащите изображение сюда</strong>
+                    <span class="meta">или нажмите, чтобы выбрать файл</span>
+                </div>
+            </div>
+
+            <!-- Скрытый настоящий input БЕЗ стандартных «На данный момент» -->
+            <input type="file"
+                   name="{{ form.avatar.name }}"
+                   id="{{ form.avatar.id_for_label }}"
+                   accept="image/*">
+
+            {{ form.avatar.errors }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.nickname.id_for_label }}">Никнейм</label>
+            {{ form.nickname }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.bio.id_for_label }}">Описание</label>
+            {{ form.bio }}
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="button primary">Сохранить</button>
+        </div>
+    </form>
+</section>
+
+<script>
+(function() {
+    const dropzone = document.getElementById('avatar-dropzone');
+    const input = document.getElementById('{{ form.avatar.id_for_label }}');
+    const imgPreview = document.getElementById('avatar-preview');
+    const placeholder = document.getElementById('avatar-preview-placeholder');
+
+    if (!dropzone || !input) return;
+
+    // Прячем стандартный input
+    input.style.position = 'absolute';
+    input.style.left = '-9999px';
+
+    // Клик по зоне = выбор файла
+    dropzone.addEventListener('click', function () {
+        input.click();
+    });
+
+    // drag-over подсветка
+    dropzone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropzone.classList.add('drag-over');
+    });
+
+    dropzone.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+    });
+
+    // drop файла
+    dropzone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropzone.classList.remove('drag-over');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            input.files = e.dataTransfer.files;
+            handlePreview(input.files[0]);
+        }
+    });
+
+    // выбор через диалог
+    input.addEventListener('change', function () {
+        if (input.files && input.files[0]) {
+            handlePreview(input.files[0]);
+        }
+    });
+
+    function handlePreview(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            if (imgPreview) {
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = 'block';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+})();
+</script>
+{% endblock %}

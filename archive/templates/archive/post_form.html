@@ -1,0 +1,95 @@
+{% extends 'archive/base.html' %}
+{% block title %}Новый пост{% endblock %}
+
+{% block content %}
+<section class="detail auth-card">
+    <div class="card-header-row">
+        <div>
+            <h1>Написать пост</h1>
+            <p class="lead">Поделитесь новостью, идеей или опытом.</p>
+        </div>
+    </div>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-row">
+            <label for="{{ form.title.id_for_label }}">Заголовок</label>
+            {{ form.title }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.body.id_for_label }}">Текст</label>
+            {{ form.body }}
+        </div>
+
+        <div class="form-row">
+            <label for="{{ form.tags_raw.id_for_label }}">Хештеги</label>
+
+            <div class="tag-input-shell">
+                <div class="tag-pills" id="tag-pills"></div>
+                {{ form.tags_raw }}
+            </div>
+            <small class="meta">
+                Пишите <code>#tag</code> или просто слово и жмите Enter.
+            </small>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="button primary">Опубликовать</button>
+            <a href="{% url 'project_feed' %}" class="button ghost">Отмена</a>
+        </div>
+    </form>
+</section>
+
+<script>
+(function () {
+    const input = document.getElementById("{{ form.tags_raw.id_for_label }}");
+    const pills = document.getElementById("tag-pills");
+    if (!input || !pills) return;
+
+    let tags = [];
+
+    function renderPills() {
+        pills.innerHTML = "";
+        tags.forEach((t, idx) => {
+            const pill = document.createElement("span");
+            pill.className = "tag-pill";
+            pill.textContent = "#" + t;
+
+            const x = document.createElement("button");
+            x.type = "button";
+            x.className = "tag-pill-remove";
+            x.textContent = "×";
+            x.onclick = function () {
+                tags.splice(idx, 1);
+                syncInput();
+            };
+
+            pill.appendChild(x);
+            pills.appendChild(pill);
+        });
+    }
+
+    function syncInput() {
+        renderPills();
+        input.value = tags.join(" ");
+    }
+
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            const raw = input.value.trim();
+            if (!raw) return;
+            const clean = raw.replace("#", "").trim().toLowerCase();
+            if (clean && !tags.includes(clean)) {
+                tags.push(clean);
+                syncInput();
+            }
+            input.value = "";
+        }
+    });
+})();
+</script>
+{% endblock %}

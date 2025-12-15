@@ -1,0 +1,44 @@
+{% extends 'archive/base.html' %}
+{% block title %}Проекты{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Проекты</h1>
+    <p class="lead">Архив открытых проектов и репозиториев сообщества.</p>
+    <form method="get" class="search-form">
+        <input type="text" name="q" value="{{ q }}" placeholder="Название проекта" class="input-control">
+        <input type="text" name="owner" value="{{ owner }}" placeholder="Автор (username)" class="input-control" style="max-width:180px;">
+        <button type="submit" class="button">Искать</button>
+        <a href="{% url 'project_feed' %}" class="button ghost">Лента обсуждений</a>
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'project_create' %}" class="button ghost">Создать проект</a>
+        {% endif %}
+    </form>
+    {% if my_projects %}
+        <p class="meta">Мои проекты</p>
+    {% endif %}
+</section>
+
+<div class="card-grid">
+    {% for project in projects %}
+        <a class="card" href="{{ project.get_absolute_url }}" style="display:block; text-decoration:none; color:inherit;">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.short_description|default:"Без описания" }}</p>
+            <div class="meta">Автор: {{ project.owner.username }} • {{ project.created_at|date:"d.m.Y" }}</div>
+        </a>
+    {% empty %}
+        <p>Проекты не найдены.</p>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&owner={{ owner }}">Назад</a>
+        {% endif %}
+        <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ q }}&owner={{ owner }}">Вперёд</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

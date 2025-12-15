@@ -1,0 +1,48 @@
+{% extends "archive/base.html" %}
+{% block title %}Загрузка ресурса{% endblock %}
+
+{% block content %}
+<section class="upload-page">
+    <div class="upload-header">
+        <div>
+            <p class="eyebrow">Новый ресурс</p>
+            <h1>Загрузить материал</h1>
+            <p class="lead">Заполните форму и отправьте ресурс.</p>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="upload-layout">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="upload-main">
+            <div class="panel">
+                <div class="form-row">
+                    <label for="{{ form.title.id_for_label }}">Название</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.full_description.id_for_label }}">Описание</label>
+                    {{ form.full_description }}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.github_url.id_for_label }}">GitHub URL</label>
+                    {{ form.github_url }}
+                </div>
+            </div>
+        </div>
+
+        <aside class="upload-side">
+            <div class="panel sticky-panel">
+                <div class="panel-header">
+                    <h3>Публикация</h3>
+                </div>
+                <div class="actions stacked">
+                    <button type="submit" class="button primary">Сохранить</button>
+                    <a href="{% url 'home' %}" class="button ghost">Отмена</a>
+                </div>
+            </div>
+        </aside>
+    </form>
+</section>
+{% endblock %}

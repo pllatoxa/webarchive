@@ -1,0 +1,23 @@
+{% extends "archive/base.html" %}
+{% block title %}Вход по почте{% endblock %}
+
+{% block content %}
+<section class="detail auth-card">
+    <h1>Войти по коду</h1>
+    <p class="lead">Введите email, мы отправим код для входа.</p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-row">
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+        <div class="actions">
+            <button type="submit" class="button primary">Отправить код</button>
+            <a href="{% url 'login' %}" class="button ghost">Обычный вход</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

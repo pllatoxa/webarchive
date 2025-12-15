@@ -1,0 +1,49 @@
+{% extends 'archive/base.html' %}
+{% block title %}{{ resource.title }}{% endblock %}
+{% block content %}
+<article class="detail">
+    <h1>{{ resource.title }}</h1>
+    <p class="lead">{{ resource.description }}</p>
+    <div class="meta">{{ resource.get_type_display }} • {{ resource.get_difficulty_display }} • {{ resource.language|upper }}</div>
+    <div class="pill-row">
+        <span class="pill">{{ resource.category.name }}</span>
+        {% for tag in resource.tags.all %}<span class="pill">#{{ tag.name }}</span>{% endfor %}
+    </div>
+
+    <section class="full-text">{{ resource.full_description|linebreaks }}</section>
+
+    <div class="actions">
+        {% if resource.download_url %}
+            <a class="button" href="{{ resource.download_url }}" target="_blank" rel="noopener">Скачать</a>
+        {% endif %}
+        {% if resource.uploaded_file %}
+            <a class="button" href="{{ resource.uploaded_file.url }}" download>Скачать файл</a>
+        {% endif %}
+        {% if resource.external_url %}
+            <a class="button ghost" href="{{ resource.external_url }}" target="_blank" rel="noopener">Перейти к ресурсу</a>
+        {% endif %}
+        {% if resource.affiliate_url %}
+            <a class="button accent" href="{{ resource.affiliate_url }}" target="_blank" rel="noopener">Рекомендованный ресурс</a>
+        {% endif %}
+    </div>
+
+    {% if resource.source_name or resource.source_url %}
+        <p class="meta">Источник: <a href="{{ resource.source_url|default:'#' }}" target="_blank" rel="noopener">{{ resource.source_name|default:resource.source_url }}</a></p>
+    {% endif %}
+</article>
+
+<section>
+    <h2>Похожие материалы</h2>
+    <div class="card-grid">
+        {% for item in related_resources %}
+            <div class="card">
+                <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
+                <p>{{ item.description|truncatewords:16 }}</p>
+                <div class="meta">{{ item.get_type_display }} • {{ item.category.name }}</div>
+            </div>
+        {% empty %}
+            <p>Нет похожих материалов.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,137 @@
+    {% extends 'archive/base.html' %}
+    {% block title %}Новый пост{% endblock %}
+
+    {% block content %}
+    <section class="detail auth-card">
+        <h1>Написать пост</h1>
+        <p class="lead">Поделитесь новостью, идеей или опытом.</p>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="form-row">
+                <label for="{{ form.title.id_for_label }}">Заголовок</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-row">
+                <label for="{{ form.body.id_for_label }}">Текст</label>
+                {{ form.body }}
+            </div>
+
+            <!-- TAG INPUT (как в TikTok/Instagram) -->
+            <div class="form-row">
+                <label>Хештеги</label>
+
+                <div id="tag-input" class="tag-input">
+                    <ul id="tag-list"></ul>
+                    <input type="text" id="tag-field" placeholder="Введите хештег и нажмите Enter...">
+                </div>
+
+                <!-- скрытое поле для отправки -->
+                <input type="hidden" name="tags" id="tags-hidden">
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="button primary">Опубликовать</button>
+                <a href="{% url 'post_list' %}" class="button ghost">Отмена</a>
+            </div>
+
+        </form>
+    </section>
+
+    <style>
+    /* красивый ввод хештегов */
+    .tag-input {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--card);
+        cursor: text;
+    }
+
+    #tag-input ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0;
+        margin: 0;
+    }
+
+    #tag-input ul li {
+        list-style: none;
+        background: var(--pill);
+        color: white;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    #tag-input ul li .remove {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    #tag-field {
+        flex: 1;
+        min-width: 140px;
+        padding: 6px;
+        border: none;
+        background: transparent;
+        outline: none;
+        color: var(--text);
+    }
+    </style>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.getElementById("tag-field");
+        const list = document.getElementById("tag-list");
+        const hidden = document.getElementById("tags-hidden");
+
+        let tags = [];
+
+        function renderTags() {
+            list.innerHTML = "";
+            tags.forEach((tag, i) => {
+                const li = document.createElement("li");
+                li.innerHTML = `#${tag} <span class="remove" data-index="${i}">×</span>`;
+                list.appendChild(li);
+            });
+            hidden.value = tags.join(",");
+        }
+
+        function addTag(tag) {
+            tag = tag.trim().replace(/^#/, "");
+            if (tag.length > 0 && !tags.includes(tag.toLowerCase())) {
+                tags.push(tag.toLowerCase());
+                renderTags();
+            }
+        }
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === "," || e.key === " ") {
+                e.preventDefault();
+                addTag(input.value);
+                input.value = "";
+            }
+        });
+
+        list.addEventListener("click", (e) => {
+            if (e.target.classList.contains("remove")) {
+                const i = e.target.getAttribute("data-index");
+                tags.splice(i, 1);
+                renderTags();
+            }
+        });
+    });
+    </script>
+
+    {% endblock %}

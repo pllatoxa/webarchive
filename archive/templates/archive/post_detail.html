@@ -1,0 +1,54 @@
+{% extends 'archive/base.html' %}
+{% block title %}Пост{% endblock %}
+
+{% block content %}
+<section class="detail">
+    <header class="detail-header" style="margin-bottom:1rem;">
+        <p class="eyebrow">Пост</p>
+        <h1>{{ post.title }}</h1>
+        <div class="meta">
+            Автор: {{ post.author.profile.nickname|default:post.author.username }} · {{ post.created_at|date:"d.m.Y H:i" }}
+        </div>
+    </header>
+
+    <div class="full-text">
+        {{ post.body|linebreaksbr }}
+    </div>
+
+    <hr style="border:1px solid var(--border); margin: 1.5rem 0;">
+
+    <div class="comments">
+        <h3>Комментарии</h3>
+
+        {% if comments %}
+            <div class="feed-comments">
+                {% for comment in comments %}
+                    <div class="comment-row">
+                        <strong>{{ comment.author.profile.nickname|default:comment.author.username }}</strong>
+                        <span class="meta"> · {{ comment.created_at|date:"d.m.Y H:i" }}</span><br>
+                        <div>{{ comment.body|linebreaksbr }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="meta">Комментариев пока нет.</p>
+        {% endif %}
+    </div>
+
+    {% if request.user.is_authenticated %}
+        <form method="post" style="margin-top:1rem;" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-row">
+                <label for="{{ form.body.id_for_label }}">Оставить комментарий</label>
+                {{ form.body }}
+            </div>
+            <div class="actions">
+                <button type="submit" class="button primary">Отправить</button>
+            </div>
+        </form>
+    {% else %}
+        <p class="meta" style="margin-top:1rem;">Войдите, чтобы комментировать.</p>
+    {% endif %}
+</section>
+{% endblock %}

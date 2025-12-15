@@ -1,0 +1,23 @@
+{% extends "archive/base.html" %}
+{% block title %}Подтверждение кода{% endblock %}
+
+{% block content %}
+<section class="detail auth-card">
+    <h1>Подтвердите вход</h1>
+    <p class="lead">Мы отправили код на {{ email }}. Введите его ниже.</p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-row">
+            <label for="{{ form.code.id_for_label }}">Код</label>
+            {{ form.code }}
+            {{ form.code.errors }}
+        </div>
+        <div class="actions">
+            <button type="submit" class="button primary">Войти</button>
+            <a href="{% url 'email_login_request' %}" class="button ghost">Отправить код ещё раз</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

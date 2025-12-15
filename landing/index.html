@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevArchive</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container header-content">
+        <div class="logo">DevArchive</div>
+        <div class="nav-shell">
+            <nav class="main-nav">
+                <a href="#">Главная</a>
+                <a href="#">Материалы</a>
+                <a href="#">Проекты</a>
+                <a href="#">Подборки</a>
+                <a href="#">Загрузка</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle" id="theme-toggle">
+                <div class="thumb"></div>
+                <div class="icons"><span>☀</span><span>🌙</span></div>
+            </div>
+            <span class="muted-text">Гость</span>
+        </div>
+    </div>
+    </div>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <h1>Архив для разработчиков</h1>
+        <p class="lead">Мануалы, обучения, скрипты, книги, подкасты и многое другое в одном месте</p>
+        <form class="search-form" action="#" method="get">
+            <input type="text" placeholder="Поиск по материалам..." aria-label="Поиск">
+            <button type="submit">Найти</button>
+        </form>
+
+        <div class="graph-area">
+            <div class="graph-node center">Материал</div>
+            <div class="graph-node left-top">Подборка</div>
+            <div class="graph-node left-bottom">Дорожная карта</div>
+            <div class="graph-node center-bottom">Проект</div>
+            <div class="graph-node right-top">Обсуждение</div>
+            <div class="graph-node right-bottom">Улучшения</div>
+
+            <span class="graph-line line-1"></span>
+            <span class="graph-line line-2"></span>
+            <span class="graph-line line-3"></span>
+            <span class="graph-line line-4"></span>
+            <span class="graph-line line-5"></span>
+            <span class="graph-line line-6"></span>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    © 2025 DevArchive
+</footer>
+
+<script>
+(() => {
+    const toggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') root.setAttribute('data-theme', 'light');
+
+    toggle.addEventListener('click', () => {
+        const isLight = root.getAttribute('data-theme') === 'light';
+        if (isLight) {
+            root.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            root.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+})();
+</script>
+</body>
+</html>

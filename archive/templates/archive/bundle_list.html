@@ -1,0 +1,16 @@
+{% extends 'archive/base.html' %}
+{% block title %}Подборки{% endblock %}
+{% block content %}
+<h1>Подборки</h1>
+<div class="card-grid">
+    {% for bundle in bundles %}
+        <a class="card" href="{{ bundle.get_absolute_url }}">
+            <h3>{{ bundle.title }}</h3>
+            <p>{{ bundle.description|truncatewords:20 }}</p>
+            <div class="meta">Цена: {{ bundle.price }} ₽</div>
+        </a>
+    {% empty %}
+        <p>Пока нет подборок.</p>
+    {% endfor %}
+</div>
+{% endblock %}

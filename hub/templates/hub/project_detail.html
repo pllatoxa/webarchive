@@ -1,0 +1,31 @@
+{% extends 'archive/base.html' %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block content %}
+<article class="detail">
+    <h1>{{ project.title }}</h1>
+    <div class="meta">Автор: {{ project.owner.profile.nickname|default:project.owner.username }} • {{ project.created_at|date:"d.m.Y" }}</div>
+    <p class="lead" style="white-space:pre-line; font-size:1.05rem;">{{ project.short_description }}</p>
+
+    <div class="actions">
+        {% if project.github_url %}
+            <a class="button ghost" href="{{ project.github_url }}" target="_blank" rel="noopener">Открыть на GitHub</a>
+        {% endif %}
+        {% if project.attachment %}
+            <a class="button ghost" href="{% url 'project_download' project.slug %}">Скачать ZIP/файл</a>
+        {% endif %}
+        {% if request.user == project.owner %}
+            <a class="button ghost" href="{% url 'project_delete' project.slug %}">Удалить проект</a>
+        {% endif %}
+    </div>
+
+    <section class="full-text">
+        {% if project.readme %}
+            {{ project.readme|linebreaks }}
+        {% else %}
+            <p class="meta">README пока пуст.</p>
+        {% endif %}
+    </section>
+</article>
+
+{# Обсуждения скрыты по запросу #}
+{% endblock %}
