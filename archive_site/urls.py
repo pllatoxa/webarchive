@@ -20,6 +20,12 @@ urlpatterns = [
         auth_views.LogoutView.as_view(next_page="home"),  # после выхода — на главную
         name="logout",
     ),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] 
+
+# Обслуживаем медиа-файлы прямо Django'ем, если разрешено флагом (например, на Render)
 if settings.SERVE_MEDIA:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    from django.views.static import serve
+
+    urlpatterns += [
+        path(f"{settings.MEDIA_URL.lstrip('/') }<path:path>", serve, {"document_root": settings.MEDIA_ROOT})
+    ]
