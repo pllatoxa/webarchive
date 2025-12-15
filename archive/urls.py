@@ -18,10 +18,6 @@ urlpatterns = [
     path("posts/<int:pk>/like/", views.post_like, name="post_like"),
     path("posts/<int:pk>/dislike/", views.post_dislike, name="post_dislike"),
 
-    # Вход по почте (код)
-    path("auth/email/", views.email_login_request, name="email_login_request"),
-    path("auth/email/verify/", views.email_login_verify, name="email_login_verify"),
-
     # Логин / логаут
     path(
         "login/",
@@ -50,5 +46,4 @@ urlpatterns = [
     # Загрузка ресурса
     path("upload/", views.resource_upload, name="resource_upload"),
 ]
-
 

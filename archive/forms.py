@@ -72,21 +72,6 @@ class StyledAuthenticationForm(AuthenticationForm):
         )
 
 
-class EmailRequestForm(forms.Form):
-    email = forms.EmailField(
-        label="Email",
-        widget=forms.EmailInput(attrs={"class": "auth-input", "placeholder": "email@example.com"}),
-    )
-
-
-class EmailCodeForm(forms.Form):
-    code = forms.CharField(
-        label="Код из письма",
-        max_length=6,
-        widget=forms.TextInput(attrs={"class": "auth-input", "placeholder": "6-значный код"}),
-    )
-
-
 # =========================
 #  ФИЛЬТР РЕСУРСОВ (если понадобится)
 # =========================

@@ -8,18 +8,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.core.mail import send_mail
 from django.contrib.auth import get_user_model, login
 
 from hub.models import Post
 from hub.forms import CommentForm
-from .forms import EmailRequestForm, EmailCodeForm
-from .models import EmailLoginCode
 
 User = get_user_model()
 @login_required
@@ -59,87 +52,6 @@ def post_detail(request, pk):
             "form": form,
         },
     )
-
-
-# -------------------------------
-# ВХОД ПО ПОЧТЕ (код на email)
-# -------------------------------
-def email_login_request(request):
-    """
-    1) Вводим email.
-    2) Создаём юзера, если нет (username = часть до @ + номер при конфликте).
-    3) Сохраняем одноразовый код, шлём на email (консольный backend).
-    4) Редирект на ввод кода.
-    """
-    if request.method == "POST":
-        form = EmailRequestForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data["email"].lower().strip()
-            user = User.objects.filter(email__iexact=email).first()
-            if not user:
-                base_username = email.split("@")[0] or "user"
-                username = base_username
-                counter = 1
-                while User.objects.filter(username=username).exists():
-                    username = f"{base_username}{counter}"
-                    counter += 1
-                user = User.objects.create_user(username=username, email=email)
-
-            # генерим код
-            import random
-
-            code = f"{random.randint(0, 999999):06d}"
-            EmailLoginCode.objects.create(email=email, code=code)
-            # отправляем (для dev — в консоль)
-            send_mail(
-                subject="Ваш код для входа",
-                message=f"Код: {code}",
-                from_email=None,
-                recipient_list=[email],
-                fail_silently=True,
-            )
-            request.session["email_login"] = email
-            messages.success(request, "Код отправлен на почту.")
-            return redirect("email_login_verify")
-    else:
-        form = EmailRequestForm()
-
-    return render(request, "archive/email_login_request.html", {"form": form})
-
-
-def email_login_verify(request):
-    """
-    Ввод кода. При успехе логиним пользователя и редиректим на главную.
-    """
-    email = request.session.get("email_login")
-    if not email:
-        return redirect("email_login_request")
-
-    if request.method == "POST":
-        form = EmailCodeForm(request.POST)
-        if form.is_valid():
-            code = form.cleaned_data["code"].strip()
-            # ищем свежий код (последние 10 минут)
-            cutoff = timezone.now() - timezone.timedelta(minutes=10)
-            record = (
-                EmailLoginCode.objects.filter(email=email, code=code, is_used=False, created_at__gte=cutoff)
-                .order_by("-created_at")
-                .first()
-            )
-            if record:
-                record.is_used = True
-                record.save(update_fields=["is_used"])
-                user = User.objects.filter(email__iexact=email).first()
-                if user:
-                    login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-                    messages.success(request, "Вы вошли по коду.")
-                    request.session.pop("email_login", None)
-                    return redirect("home")
-            messages.error(request, "Неверный или просроченный код.")
-    else:
-        form = EmailCodeForm()
-
-    return render(request, "archive/email_login_verify.html", {"form": form, "email": email})
 
 @login_required
 def profile_view(request):
