@@ -163,11 +163,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 # EMAIL
 # ======================
 
-# Почта: если нет учётки — по умолчанию пишем в консоль, чтобы не падало на проде
+# Почта: по умолчанию пишем в консоль (Render часто режет SMTP). Включай SMTP через EMAIL_USE_SMTP=1.
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_USE_SMTP = env_bool("EMAIL_USE_SMTP", False)
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND",
-    "django.core.mail.backends.smtp.EmailBackend" if EMAIL_HOST_USER else "django.core.mail.backends.console.EmailBackend",
+    "django.core.mail.backends.smtp.EmailBackend" if EMAIL_USE_SMTP else "django.core.mail.backends.console.EmailBackend",
 )
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
