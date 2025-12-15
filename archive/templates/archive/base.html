@@ -42,6 +42,8 @@
                         {% with display_name=request.user.profile.nickname|default:request.user.username %}
                             {% if request.user.profile.avatar %}
                                 <img src="{{ request.user.profile.avatar.url }}" alt="{{ display_name }}" class="user-avatar">
+                            {% elif request.user.profile.avatar_url %}
+                                <img src="{{ request.user.profile.avatar_url }}" alt="{{ display_name }}" class="user-avatar">
                             {% else %}
                                 <span class="user-avatar user-avatar-placeholder">{{ display_name|first|upper }}</span>
                             {% endif %}

@@ -15,14 +15,17 @@
 
             <!-- Превью текущего аватара -->
             <div class="avatar-preview-wrap">
-                {% if form.instance.avatar %}
-                    <img src="{{ form.instance.avatar.url }}" alt="Аватар"
-                         id="avatar-preview" class="avatar-preview">
-                {% else %}
-                    <div class="avatar-preview avatar-preview-placeholder" id="avatar-preview-placeholder">
-                        {{ request.user.username|first|upper }}
-                    </div>
-                {% endif %}
+                {% with avatar=form.instance.avatar avatar_url=form.instance.avatar_url %}
+                    {% if avatar %}
+                        <img src="{{ avatar.url }}" alt="Аватар" id="avatar-preview" class="avatar-preview">
+                    {% elif avatar_url %}
+                        <img src="{{ avatar_url }}" alt="Аватар" id="avatar-preview" class="avatar-preview">
+                    {% else %}
+                        <div class="avatar-preview avatar-preview-placeholder" id="avatar-preview-placeholder">
+                            {{ request.user.username|first|upper }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </div>
 
             <!-- Дропзона -->

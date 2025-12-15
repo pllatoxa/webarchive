@@ -49,15 +49,17 @@
             <article class="feed-card" style="display:flex;flex-direction:column;gap:0.6rem;">
                 <header class="feed-card-header">
                     <div class="feed-user">
-                        {% if post.author.profile.avatar %}
-                            <img src="{{ post.author.profile.avatar.url }}"
-                                 alt="{{ post.author.username }}"
-                                 class="feed-avatar">
-                        {% else %}
-                            <div class="feed-avatar placeholder">
-                                {{ post.author.username|first|upper }}
-                            </div>
-                        {% endif %}
+                        {% with p=post.author.profile %}
+                            {% if p.avatar %}
+                                <img src="{{ p.avatar.url }}" alt="{{ post.author.username }}" class="feed-avatar">
+                            {% elif p.avatar_url %}
+                                <img src="{{ p.avatar_url }}" alt="{{ post.author.username }}" class="feed-avatar">
+                            {% else %}
+                                <div class="feed-avatar placeholder">
+                                    {{ post.author.username|first|upper }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                         <div class="feed-user-text">
                             <span class="feed-username">
                                 {{ post.author.profile.nickname|default:post.author.username }}
