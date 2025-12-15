@@ -50,3 +50,5 @@ urlpatterns = [
     # Загрузка ресурса
     path("upload/", views.resource_upload, name="resource_upload"),
 ]
+
+

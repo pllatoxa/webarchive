@@ -3,6 +3,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+STATIC_URL = "/static/"
+STATICFILES_DIRS = []
+
 
 def env_bool(name: str, default: bool = False) -> bool:
     return os.environ.get(name, str(default)).strip().lower() in ("1", "true", "yes", "y", "on")
@@ -23,8 +26,8 @@ CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get(
 ).split(",") if o.strip()]
 
 
-# === APPS ===
 INSTALLED_APPS = [
+    # стандартные django-приложения
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -32,9 +35,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # твои приложения
     "hub",
-    "archive",
+    "archive.apps.ArchiveConfig",
 
+    # внешние
     "social_django",
 ]
 
@@ -106,7 +111,9 @@ STATICFILES_DIRS = []
 if (BASE_DIR / "static").exists():
     STATICFILES_DIRS.append(BASE_DIR / "static")
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Use non-manifest storage by default to avoid 500 if collectstatic wasn't run
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+WHITENOISE_USE_FINDERS = env_bool("WHITENOISE_USE_FINDERS", True)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

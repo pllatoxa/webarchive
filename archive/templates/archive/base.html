@@ -82,7 +82,7 @@
 
     <!-- ВАЖНО: убрали home-centered отсюда -->
     <div class="page-main">
-        <main class="container" {% if request.path == '/' %}style="padding-top: 118px;"{% endif %}>
+        <main class="container">
             {% if messages %}
                 <div class="flash-wrap">
                     {% for message in messages %}

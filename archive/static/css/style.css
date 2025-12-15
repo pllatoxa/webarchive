@@ -71,10 +71,11 @@ a:hover {
     color: var(--accent);
 }
 
-.container {
-    width: min(1100px, 92vw);
-    margin: 0 auto;
-    padding: 1.5rem 0;
+.container{
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem; /* чтобы не прилипало к краям */
 }
 
 /* ===== HEADER ===== */
@@ -100,14 +101,15 @@ a:hover {
     width: 100%;
 }
 
-/* логотип слева, не сжимается */
+/* логотип слева, не сжимается */   
 .logo {
     font-weight: 700;
     font-size: 1.35rem;
     color: var(--accent);
     flex-shrink: 0;
-    margin-left: clamp(0rem, 3vw, 1.5rem);
-    margin-right: clamp(0.5rem, 2vw, 1.2rem);
+
+    margin-left: 0 !important;
+    margin-right: 0.75rem; /* небольшой зазор от меню, можно 0 */
 }
 
 /* оболочка меню занимает всё доступное пространство, чтобы центрировать */
@@ -1776,40 +1778,6 @@ body.home-static {
   transition: background-color .25s ease, border-color .25s ease, color .25s ease;
 }
 
-body.home-static .container,
-.page-main.home-centered .container{
-    padding-top: 0.5rem;   /* или 0 */
-}
-
-/* Главная — поднять блок вверх */
-body.home-static .home-hero{
-  padding-top: 1rem !important;
-  padding-bottom: 1.6rem !important;
-}
-
-/* и убираем лишний верхний воздух контейнера на главной */
-body.home-static .container{
-  padding-top: 0.5rem !important; /* можно 0 */
-}
-
-/* Главная — поднять hero выше */
-body.home-static .container{
-  padding-top: 0.25rem !important; /* или 0 */
-}
-
-body.home-static .home-hero{
-  padding-top: 0.75rem !important;  /* было 2.5rem */
-  padding-bottom: 1.5rem !important;
-}
-
-body.home-static .container{
-  padding-top: 0.25rem !important;
-}
-
-body.home-static .home-hero{
-  padding-top: 0.75rem !important;
-  padding-bottom: 1.5rem !important;
-}
 
 /* ===== HOME: поднять самый первый блок контента вверх ===== */
 body.home-static .page-main.home-centered{
@@ -1827,25 +1795,10 @@ body.home-static .page-main.home-centered > main.container > :first-child{
   padding-top: 0.75rem !important; /* можешь сделать 0 если хочешь совсем вверх */
 }
 
-html { outline: 8px solid red !important; }
-
-
-/* HOME: убрать горизонтальное центрирование */
-body.home-static .home-hero{
-  text-align: left !important;
-}
-
-body.home-static .home-hero-content{
-  margin: 0 !important;          /* было 0 auto */
-  align-items: flex-start;
-}
-
-body.home-static .home-search{
-  justify-content: flex-start !important;
-}
-
-body.home-static .home-hero-actions{
-  justify-content: flex-start !important;
+/* HOME: вернуть блок в центр по ширине, убрать смещение full-bleed */
+body.home-static .home-hero.full-bleed{
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* Главная — опустить контент чуть ниже */
@@ -1882,4 +1835,145 @@ body.home-static .home-search button{
 body.home-static .home-hero-actions .button.large{
   font-size: 1.15rem !important;
   padding: 1.15rem 2rem !important;
+}
+
+body.home-static .page-main > main.container{
+  padding-top: 30px !important; /* можешь 12–40px */
+}
+
+body.home-static .page-main{
+  overflow: hidden; /* ок */
+}
+body.home-static .page-main > main.container{
+  overflow: visible;
+}
+
+/* === DEBUG: если это появится — CSS точно подхватился === */
+/* body { outline: 6px solid red !important; } */
+
+/* === FIX: контейнер НЕ должен быть шире, чем область справа от сайдбара === */
+.page-main > main.container{
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Убираем любые full-bleed смещения на главной (часто именно это режет слева) */
+body.home-static .home-hero.full-bleed{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+}
+
+/* На всякий случай: чтобы ничего не вылезало влево/вправо */
+.page-main{
+  overflow-x: hidden !important;
+}
+
+/* Центруем ТОЛЬКО текст внутри hero, сам блок остаётся на месте */
+body.home-static .home-hero{
+  text-align: center !important;
+}
+
+/* чтобы элементы внутри (строки/колонки) тоже были по центру */
+body.home-static .home-hero-content{
+  align-items: center !important;
+}
+
+/* кнопки и поиск по центру */
+body.home-static .home-search{
+  justify-content: center !important;
+}
+
+body.home-static .home-hero-actions{
+  justify-content: center !important;
+}
+
+
+/* === FORCE CENTER HOME HERO (Word-like) === */
+body.home-static .page-main .home-hero{
+  text-align: center !important;
+}
+
+body.home-static .page-main .home-hero-content{
+  margin: 0 auto !important;
+  align-items: center !important;
+}
+
+body.home-static .page-main .home-search{
+  justify-content: center !important;
+}
+
+body.home-static .page-main .home-hero-actions{
+  justify-content: center !important;
+}
+
+/* Word-style: центрируем текст внутри, но делаем "абзац" уже */
+body.home-static .home-hero-content{
+  max-width: 860px !important;   /* попробуй 720–900 */
+}
+
+/* заголовок: ограничиваем ширину строки и центрируем */
+body.home-static .home-hero h1{
+  max-width: 22ch;              /* ширина по символам, удобно */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* подзаголовок тоже как абзац */
+body.home-static .home-hero .lead{
+  max-width: 60ch;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* кнопки — центр */
+body.home-static .home-hero-actions{
+  justify-content: center !important;
+}
+
+body.home-static .home-hero{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+
+
+.site-header .container {
+    max-width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+/* === HEADER: логотип в левый край, кнопки в правый край === */
+.site-header .header-content{
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+/* контейнер в шапке на всю ширину */
+.site-header .container{
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+/* логотип в край */
+.site-header .logo{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* блок справа в край */
+.site-header .header-right{
+  margin-left: auto !important;
+  padding-right: 0 !important;
 }
